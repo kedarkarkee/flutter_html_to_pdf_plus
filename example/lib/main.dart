@@ -2,23 +2,24 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_full_pdf_viewer/flutter_full_pdf_viewer.dart';
 import 'package:flutter_html_to_pdf/flutter_html_to_pdf.dart';
 import 'package:path_provider/path_provider.dart';
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: MyApp(),
   ));
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  String generatedPdfFilePath;
+  String? generatedPdfFilePath;
 
   @override
   void initState() {
@@ -27,7 +28,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> generateExampleDocument() async {
-    final htmlContent = """
+    const htmlContent = """
     <!DOCTYPE html>
     <html>
       <head>
@@ -69,7 +70,7 @@ class _MyAppState extends State<MyApp> {
 
     Directory appDocDir = await getApplicationDocumentsDirectory();
     final targetPath = appDocDir.path;
-    final targetFileName = "example-pdf";
+    const targetFileName = "example-pdf";
 
     final generatedPdfFile = await FlutterHtmlToPdf.convertFromHtmlContent(htmlContent, targetPath, targetFileName);
     generatedPdfFilePath = generatedPdfFile.path;
@@ -82,13 +83,8 @@ class _MyAppState extends State<MyApp> {
       appBar: AppBar(),
       body: Center(
         child: ElevatedButton(
-          child: Text("Open Generated PDF Preview"),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => PDFViewerScaffold(appBar: AppBar(title: Text("Generated PDF Document")), path: generatedPdfFilePath)),
-            );
-          },
+          child: const Text("Open Generated PDF Preview"),
+          onPressed: () {},
         ),
       ),
     ));
