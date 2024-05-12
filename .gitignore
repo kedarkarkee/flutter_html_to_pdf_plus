@@ -12,3 +12,10 @@ build/
 flutter_export_environment.sh
 .flutter-plugins-dependencies
 Flutter.podspec
+
+# FVM Version Cache
+.fvm/
+
+.fvmrc
+
+.vscode
