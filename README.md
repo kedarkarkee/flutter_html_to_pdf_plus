@@ -1,51 +1,14 @@
-# flutter_html_to_pdf
+# flutter_html_to_pdf_plus
 
-[![pub package](https://img.shields.io/pub/v/flutter_html_to_pdf.svg)](https://pub.dartlang.org/packages/flutter_html_to_pdf)
+[![pub package](https://img.shields.io/pub/v/flutter_html_to_pdf_plus.svg)](https://pub.dartlang.org/packages/flutter_html_to_pdf_plus)
 
 Flutter plugin for generating PDF files from HTML
 
 ### Usage
 
-```dart
-var htmlContent =
-"""
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-  table, th, td {
-    border: 1px solid black;
-    border-collapse: collapse;
-  }
-  th, td, p {
-    padding: 5px;
-    text-align: left;
-  }
-  </style>
-</head>
-  <body>
-    <h2>PDF Generated with flutter_html_to_pdf plugin</h2>
-    <table style="width:100%">
-      <caption>Sample HTML Table</caption>
-      <tr>
-        <th>Month</th>
-        <th>Savings</th>
-      </tr>
-      <tr>
-        <td>January</td>
-        <td>100</td>
-      </tr>
-      <tr>
-        <td>February</td>
-        <td>50</td>
-      </tr>
-    </table>
-    <p>Image loaded from web</p>
-    <img src="https://i.imgur.com/wxaJsXF.png" alt="web-img">
-  </body>
-</html>
-""";
+#### From a raw HTML content
 
+```dart 
 var targetPath = "/your/sample/path";
 var targetFileName = "example_pdf_file"
 
@@ -57,24 +20,41 @@ var generatedPdfFile = await FlutterHtmlToPdf.convertFromHtmlContent(
     margins: PdfPrinterMargins(top: 10, bottom: 10, left: 10, right: 10),
     orientation: PrintOrientation.Landscape,
     printSize: PrintSize.A4
-  ));
+  ),
+);
 ```
 
-Code above simply generates **PDF** file from **HTML** content. It should work with most of common HTML markers. You don’t need to add *.pdf* extension to ***targetFileName*** because plugin only generates PDF files and extension will be added automatically.
-#### Other Usages
-You can also pass ***File*** object with **HTML** content inside as parameter
+#### From an HTML file
 ```dart
 var file = File("/sample_path/example.html");
 var generatedPdfFile = await FlutterHtmlToPdf.convertFromHtmlFile(
-    file, targetPath, targetFileName);
+  htmlFile: file,
+  configuration: PdfPrinterConfiguration(
+    targetPath: targetPath, 
+    targetFileName: targetFileName,
+    margins: PdfPrinterMargins(top: 10, bottom: 10, left: 10, right: 10),
+    orientation: PrintOrientation.Landscape,
+    printSize: PrintSize.A4
+  ),
+);
 ```
 
-or even just path to this file
+#### From an HTML file path
 ```dart
 var filePath = "/sample_path/example.html";
 var generatedPdfFile = await FlutterHtmlToPdf.convertFromHtmlFilePath(
-    filePath, targetPath, targetFileName);
+  htmlFilePath: filePath,
+  configuration: PdfPrinterConfiguration(
+    targetPath: targetPath, 
+    targetFileName: targetFileName,
+    margins: PdfPrinterMargins(top: 10, bottom: 10, left: 10, right: 10),
+    orientation: PrintOrientation.Landscape,
+    printSize: PrintSize.A4
+  ),
+);
 ```
+
+> /!\ Caveats : Customization of orientation is not supported on iOS. Any config will be ignored.
 
 #### Images
 If your want to add local image from device to your **HTML** you need to pass path to image as ***src*** value.
@@ -87,5 +67,14 @@ or if you want to use the image ***File*** object
 <img src="${imageFile.path}" alt="web-img">
 ```
 
-Many images inside your document can significantly affect the final file size so I suggest to use [flutter_image_compress](https://github.com/OpenFlutter/flutter_image_compress) plugin.
+Many images inside your document can significantly affect the final file size so we suggest to use [flutter_image_compress](https://github.com/OpenFlutter/flutter_image_compress) plugin to compress images before generating PDF.
 
+## Contributing
+
+If you want to contribute, please submit a [pull request](https://github.com/originoss/flutter_html_to_pdf_plus/pulls) or [create an issue](https://github.com/originoss/flutter_html_to_pdf_plus/issues).
+
+## Credits
+
+- Thanks to [Afur](https://github.com/afur) for the initial work on this plugin
+- Thanks to [raister21](https://github.com/raister21) for their work on PDF Size & Orientation
+- Thanks to [wiseminds](https://github.com/wiseminds) for the inspiration for margins customization

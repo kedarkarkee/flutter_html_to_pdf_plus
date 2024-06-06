@@ -1,4 +1,4 @@
-package com.originoss.flutter_html_to_pdf
+package com.originoss.flutter_html_to_pdf_plus
 
 import android.annotation.SuppressLint
 import android.content.Context

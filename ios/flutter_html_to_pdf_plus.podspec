@@ -2,15 +2,15 @@
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
 #
 Pod::Spec.new do |s|
-  s.name             = 'flutter_html_to_pdf'
+  s.name             = 'flutter_html_to_pdf_plus'
   s.version          = '0.0.1'
-  s.summary          = 'A new Flutter plugin.'
+  s.summary          = 'A Flutter plugin for generating PDF documents from HTML code templates.'
   s.description      = <<-DESC
-A new Flutter plugin.
+A Flutter plugin for generating PDF documents from HTML code templates
                        DESC
   s.homepage         = 'http://example.com'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+  s.author           = { 'Origin OSS' => 'email@example.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'

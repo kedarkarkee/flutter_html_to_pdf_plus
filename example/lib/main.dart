@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_html_to_pdf/flutter_html_to_pdf.dart';
+import 'package:flutter_html_to_pdf_plus/flutter_html_to_pdf_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
 
@@ -43,7 +43,7 @@ class _MyAppState extends State<MyApp> {
         </style>
       </head>
       <body>
-        <h2>PDF Generated with flutter_html_to_pdf plugin</h2>
+        <h2>PDF Generated with flutter_html_to_pdf_plus plugin</h2>
         
         <table style="width:100%">
           <caption>Sample HTML Table</caption>

@@ -1,4 +1,4 @@
-import 'package:flutter_html_to_pdf/src/print_config_enums.dart';
+import 'package:flutter_html_to_pdf_plus/flutter_html_to_pdf_plus.dart';
 
 class PdfPageMargin {
   final int top;
@@ -14,6 +14,7 @@ class PdfPageMargin {
   });
 }
 
+/// Print Pdf Configuration
 class PrintPdfConfiguration {
   final String targetDirectory;
   final String targetName;
@@ -33,7 +34,8 @@ class PrintPdfConfiguration {
   PrintPdfConfiguration({
     required this.targetDirectory,
     required this.targetName,
-    this.margins = const PdfPageMargin(top: 50, bottom: 50, left: 50, right: 50),
+    this.margins =
+        const PdfPageMargin(top: 50, bottom: 50, left: 50, right: 50),
     this.printSize = PrintSize.A4,
     this.printOrientation = PrintOrientation.Portrait,
   });

@@ -1,6 +1,6 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_html_to_pdf (0.0.1):
+  - flutter_html_to_pdf_plus (0.0.1):
     - Flutter
   - open_filex (0.0.2):
     - Flutter
@@ -10,15 +10,15 @@ PODS:
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - flutter_html_to_pdf (from `.symlinks/plugins/flutter_html_to_pdf/ios`)
+  - flutter_html_to_pdf_plus (from `.symlinks/plugins/flutter_html_to_pdf_plus/ios`)
   - open_filex (from `.symlinks/plugins/open_filex/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  flutter_html_to_pdf:
-    :path: ".symlinks/plugins/flutter_html_to_pdf/ios"
+  flutter_html_to_pdf_plus:
+    :path: ".symlinks/plugins/flutter_html_to_pdf_plus/ios"
   open_filex:
     :path: ".symlinks/plugins/open_filex/ios"
   path_provider_foundation:
@@ -26,7 +26,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_html_to_pdf: 0fd9f8d04f335d68b06a7c4ab5fc85d22e1ef91b
+  flutter_html_to_pdf_plus: e2d317248694bb2b7c9f733cc890a04d5575e3ab
   open_filex: 6e26e659846ec990262224a12ef1c528bb4edbe4
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
 
