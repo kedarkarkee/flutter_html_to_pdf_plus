@@ -4,11 +4,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_html_to_pdf/flutter_html_to_pdf.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:open_filex/open_filex.dart';
 
 void main() {
-  runApp(const MaterialApp(
-    home: MyApp(),
-  ));
+  runApp(const MaterialApp(home: MyApp()));
 }
 
 class MyApp extends StatefulWidget {
@@ -19,15 +18,15 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String? generatedPdfFilePath;
+  PrintSize? selectedPrintSize;
+  PrintOrientation? selectedPrintOrientation;
 
   @override
   void initState() {
     super.initState();
-    generateExampleDocument();
   }
 
-  Future<void> generateExampleDocument() async {
+  Future<String> generateExampleDocument() async {
     const htmlContent = """
     <!DOCTYPE html>
     <html>
@@ -72,21 +71,71 @@ class _MyAppState extends State<MyApp> {
     final targetPath = appDocDir.path;
     const targetFileName = "example-pdf";
 
-    final generatedPdfFile = await FlutterHtmlToPdf.convertFromHtmlContent(htmlContent, targetPath, targetFileName);
-    generatedPdfFilePath = generatedPdfFile.path;
+    if (File("$targetPath/$targetFileName.pdf").existsSync()) {
+      File("$targetPath/$targetFileName.pdf").deleteSync();
+    }
+
+    final generatedPdfFile = await FlutterHtmlToPdf.convertFromHtmlContent(
+      content: htmlContent,
+      configuration: PrintPdfConfiguration(
+        targetDirectory: targetPath,
+        targetName: targetFileName,
+        printSize: selectedPrintSize ?? PrintSize.A4,
+        printOrientation: selectedPrintOrientation ?? PrintOrientation.Portrait,
+      ),
+    );
+    return generatedPdfFile.path;
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: ElevatedButton(
-          child: const Text("Open Generated PDF Preview"),
-          onPressed: () {},
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Html to PDF'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            DropdownButtonFormField(
+              value: selectedPrintOrientation ?? PrintOrientation.Portrait,
+              items: [
+                ...PrintOrientation.values.map((e) {
+                  return DropdownMenuItem(
+                    value: e,
+                    child: Text(e.toString()),
+                  );
+                })
+              ],
+              onChanged: (value) =>
+                  setState(() => selectedPrintOrientation = value),
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField(
+              value: selectedPrintSize ?? PrintSize.A4,
+              items: [
+                ...PrintSize.values.map((e) {
+                  return DropdownMenuItem(
+                    value: e,
+                    child: Text(e.toString()),
+                  );
+                })
+              ],
+              onChanged: (value) => setState(() => selectedPrintSize = value),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              child: const Text("Open Generated PDF Preview"),
+              onPressed: () async {
+                final path = await generateExampleDocument();
+
+                await OpenFilex.open(path);
+              },
+            ),
+          ],
         ),
       ),
-    ));
+    );
   }
 }
