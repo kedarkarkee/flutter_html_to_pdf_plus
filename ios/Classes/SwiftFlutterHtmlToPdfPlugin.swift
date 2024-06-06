@@ -20,20 +20,28 @@ public class SwiftFlutterHtmlToPdfPlugin: NSObject, FlutterPlugin{
         let width = Double(args!["width"] as! Int)
         let height = Double(args!["height"] as! Int)
         let orientation = args!["orientation"]
+        let margins = args!["margins"] as? [Int]
         
         let viewControler = UIApplication.shared.delegate?.window?!.rootViewController
         wkWebView = WKWebView.init(frame: CGRect(origin: CGPoint(x:0, y:0), size: CGSize(width:width, height: height)))
         wkWebView.isHidden = true
         wkWebView.tag = 100
         viewControler?.view.addSubview(wkWebView)
+
+        // the `position: fixed` element not working as expected
+        let contentController = wkWebView.configuration.userContentController
+        contentController.addUserScript(WKUserScript(source: "document.documentElement.style.webkitUserSelect='none';", injectionTime: .atDocumentEnd, forMainFrameOnly: true))
+        contentController.addUserScript(WKUserScript(source: "document.documentElement.style.webkitTouchCallout='none';", injectionTime: .atDocumentEnd, forMainFrameOnly: true))
+        wkWebView.scrollView.bounces = false
         
         let htmlFileContent = FileHelper.getContent(from: htmlFilePath!) // get html content from file
         wkWebView.loadHTMLString(htmlFileContent, baseURL: Bundle.main.bundleURL) // load html into hidden webview
+        let formatter: UIPrintFormatter = UIMarkupTextPrintFormatter(markupText: htmlFileContent)
         
         urlObservation = wkWebView.observe(\.isLoading, changeHandler: { (webView, change) in
             // this is workaround for issue with loading local images
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                let convertedFileURL = PDFCreator.create(printFormatter: self.wkWebView.viewPrintFormatter(), width: width, height: height)
+                let convertedFileURL = PDFCreator.create(printFormatter: formatter, width: width, height: height, orientation: orientation as! String, margins: margins!)
                 let convertedFilePath = convertedFileURL.absoluteString.replacingOccurrences(of: "file://", with: "") // return generated pdf path
                 if let viewWithTag = viewControler?.view.viewWithTag(100) {
                     viewWithTag.removeFromSuperview() // remove hidden webview when pdf is generated

@@ -28,6 +28,7 @@ class FlutterHtmlToPdf {
       temporaryCreatedHtmlFile.path,
       configuration.printSize,
       configuration.printOrientation,
+      configuration.margins,
     );
 
     temporaryCreatedHtmlFile.delete();
@@ -43,19 +44,20 @@ class FlutterHtmlToPdf {
   /// Can throw a [PlatformException] or (unlikely) a [MissingPluginException] converting html to pdf
   static Future<File> convertFromHtmlFile({
     required File htmlFile,
-    required PrintPdfConfiguration printPdfConfiguration,
+    required PrintPdfConfiguration configuration,
   }) async {
     await FileUtils.appendStyleTagToHtmlFile(htmlFile.path);
     final String generatedPdfFilePath = await _convertFromHtmlFilePath(
       htmlFile.path,
-      printPdfConfiguration.printSize,
-      printPdfConfiguration.printOrientation,
+      configuration.printSize,
+      configuration.printOrientation,
+      configuration.margins,
     );
 
     return FileUtils.copyAndDeleteOriginalFile(
       generatedPdfFilePath,
-      printPdfConfiguration.targetDirectory,
-      printPdfConfiguration.targetName,
+      configuration.targetDirectory,
+      configuration.targetName,
     );
   }
 
@@ -63,19 +65,20 @@ class FlutterHtmlToPdf {
   /// Can throw a [PlatformException] or (unlikely) a [MissingPluginException] converting html to pdf
   static Future<File> convertFromHtmlFilePath({
     required String htmlFilePath,
-    required PrintPdfConfiguration printPdfConfiguration,
+    required PrintPdfConfiguration configuration,
   }) async {
     await FileUtils.appendStyleTagToHtmlFile(htmlFilePath);
     final String generatedPdfFilePath = await _convertFromHtmlFilePath(
       htmlFilePath,
-      printPdfConfiguration.printSize,
-      printPdfConfiguration.printOrientation,
+      configuration.printSize,
+      configuration.printOrientation,
+      configuration.margins,
     );
 
     return FileUtils.copyAndDeleteOriginalFile(
       generatedPdfFilePath,
-      printPdfConfiguration.targetDirectory,
-      printPdfConfiguration.targetName,
+      configuration.targetDirectory,
+      configuration.targetName,
     );
   }
 
@@ -84,6 +87,7 @@ class FlutterHtmlToPdf {
     String htmlFilePath,
     PrintSize printSize,
     PrintOrientation printOrientation,
+    PdfPageMargin pageMargin,
   ) async {
     int width = printSize
         .getDimensionsInPixels[printOrientation.getWidthDimensionIndex];
@@ -98,6 +102,12 @@ class FlutterHtmlToPdf {
         'height': height,
         'printSize': printSize.printSizeKey,
         'orientation': printOrientation.orientationKey,
+        'margins': [
+          pageMargin.left,
+          pageMargin.top,
+          pageMargin.right,
+          pageMargin.bottom,
+        ],
       },
     ) as String;
   }

@@ -1,4 +1,4 @@
-package com.afur.flutter_html_to_pdf
+package com.originoss.flutter_html_to_pdf
 
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel

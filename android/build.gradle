@@ -1,4 +1,4 @@
-group 'com.afur.flutter_html_to_pdf'
+group 'com.originoss.flutter_html_to_pdf'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -26,7 +26,7 @@ apply plugin: 'kotlin-android'
 
 android {
     if (project.android.hasProperty("namespace")) {
-        namespace 'com.afur.flutter_html_to_pdf'
+        namespace 'com.originoss.flutter_html_to_pdf'
     }
 
     compileSdk 34

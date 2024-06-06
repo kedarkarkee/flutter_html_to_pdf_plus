@@ -1,4 +1,4 @@
-package com.afur.flutter_html_to_pdf
+package com.originoss.flutter_html_to_pdf
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -19,7 +19,7 @@ class HtmlToPdfConverter {
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    fun convert(filePath: String, applicationContext: Context, printSize: String, orientation: String, callback: Callback) {
+    fun convert(filePath: String, applicationContext: Context, printSize: String, orientation: String, margins: List<Int>, callback: Callback) {
         val webView = WebView(applicationContext)
         val htmlContent = File(filePath).readText(Charsets.UTF_8)
         webView.settings.javaScriptEnabled = true
@@ -29,12 +29,12 @@ class HtmlToPdfConverter {
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
                 super.onPageFinished(view, url)
-                createPdfFromWebView(webView, applicationContext, printSize, orientation, callback)
+                createPdfFromWebView(webView, applicationContext, printSize, orientation, margins, callback)
             }
         }
     }
 
-    fun createPdfFromWebView(webView: WebView, applicationContext: Context, printSize: String, orientation: String, callback: Callback) {
+    fun createPdfFromWebView(webView: WebView, applicationContext: Context, printSize: String, orientation: String, margins: List<Int>, callback: Callback) {
         val path = applicationContext.filesDir
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             var mediaSize = PrintAttributes.MediaSize.ISO_A4
@@ -60,8 +60,8 @@ class HtmlToPdfConverter {
 
             val attributes = PrintAttributes.Builder()
                 .setMediaSize(mediaSize)
-                .setResolution(PrintAttributes.Resolution("pdf", "pdf", 300, 300))
-                .setMinMargins(PrintAttributes.Margins.NO_MARGINS).build()
+                .setResolution(PrintAttributes.Resolution("pdf", "pdf", 600, 600))
+                .setMinMargins(PrintAttributes.Margins(margins[0], margins[1], margins[2], margins[3])).build()
 
             val printer = PdfPrinter(attributes)
 

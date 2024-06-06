@@ -1,4 +1,4 @@
-package com.afur.flutter_html_to_pdf
+package com.originoss.flutter_html_to_pdf
 
 import android.content.Context
 import androidx.annotation.NonNull
@@ -37,8 +37,9 @@ class FlutterHtmlToPdfPlugin: FlutterPlugin, MethodCallHandler {
     val htmlFilePath = call.argument<String>("htmlFilePath")
     val printSize = call.argument<String>("printSize")
     val orientation = call.argument<String>("orientation")
+    val margins = call.argument<List<Int>>("margins")
 
-    HtmlToPdfConverter().convert(htmlFilePath!!, applicationContext, printSize!!, orientation!!, object : HtmlToPdfConverter.Callback {
+    HtmlToPdfConverter().convert(htmlFilePath!!, applicationContext, printSize!!, orientation!!, margins!!, object : HtmlToPdfConverter.Callback {
       override fun onSuccess(filePath: String) {
         result.success(filePath)
       }

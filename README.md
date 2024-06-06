@@ -50,7 +50,14 @@ var targetPath = "/your/sample/path";
 var targetFileName = "example_pdf_file"
 
 var generatedPdfFile = await FlutterHtmlToPdf.convertFromHtmlContent(
-    htmlContent, targetPath, targetFileName);
+  content: htmlContent, 
+  configuration: PdfPrinterConfiguration(
+    targetPath: targetPath, 
+    targetFileName: targetFileName,
+    margins: PdfPrinterMargins(top: 10, bottom: 10, left: 10, right: 10),
+    orientation: PrintOrientation.Landscape,
+    printSize: PrintSize.A4
+  ));
 ```
 
 Code above simply generates **PDF** file from **HTML** content. It should work with most of common HTML markers. You don’t need to add *.pdf* extension to ***targetFileName*** because plugin only generates PDF files and extension will be added automatically.
@@ -81,6 +88,4 @@ or if you want to use the image ***File*** object
 ```
 
 Many images inside your document can significantly affect the final file size so I suggest to use [flutter_image_compress](https://github.com/OpenFlutter/flutter_image_compress) plugin.
-
-
 
