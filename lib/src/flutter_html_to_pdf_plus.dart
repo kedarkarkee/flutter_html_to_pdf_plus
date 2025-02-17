@@ -18,12 +18,16 @@ class FlutterHtmlToPdf {
     required String content,
     required PrintPdfConfiguration configuration,
   }) async {
+    print('Before creating Temporary HTML File');
     final File temporaryCreatedHtmlFile =
         await FileUtils.createFileWithStringContent(
       content,
       configuration.htmlFilePath,
     );
+    print('Now Applying Style Tag');
+
     await FileUtils.appendStyleTagToHtmlFile(temporaryCreatedHtmlFile.path);
+    print('Sending to platform Channel');
 
     final String generatedPdfFilePath = await _convertFromHtmlFilePath(
       temporaryCreatedHtmlFile.path,
@@ -31,6 +35,7 @@ class FlutterHtmlToPdf {
       configuration.printOrientation,
       configuration.margins,
     );
+    print('Got from platform channel');
 
     temporaryCreatedHtmlFile.delete();
 
