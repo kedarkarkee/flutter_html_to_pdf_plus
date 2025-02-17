@@ -5,11 +5,13 @@ import android.content.Context
 import android.os.Build
 import android.print.PdfPrinter
 import android.print.PrintAttributes
+import android.util.Log
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 
 import java.io.File
+import java.util.logging.Logger
 
 
 class HtmlToPdfConverter {
@@ -31,7 +33,7 @@ class HtmlToPdfConverter {
             }
             stringBuilder.toString()
         }
-        print("PDFPLUS: Html Content Read");
+        Log.d("PDFPLUS","Html Content Read");
         webView.settings.javaScriptEnabled = true
         webView.settings.javaScriptCanOpenWindowsAutomatically = true
         webView.settings.allowFileAccess = true
@@ -42,7 +44,7 @@ class HtmlToPdfConverter {
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
                 super.onPageFinished(view, url)
-                print("PDFPLUS: Html Content Page Load Finished");
+                Log.d("PDFPLUS","Html Content Page Load Finished");
                 createPdfFromWebView(webView, applicationContext, printSize, orientation, margins, callback)
             }
         }
@@ -81,7 +83,7 @@ class HtmlToPdfConverter {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 val adapter = webView.createPrintDocumentAdapter(temporaryDocumentName)
-                print("PDFPLUS: Start PDF Creation");
+                Log.d("PDFPLUS" ,"Start PDF Creation");
                 printer.print(adapter, path, temporaryFileName, object : PdfPrinter.Callback {
                     override fun onSuccess(filePath: String) {
                         callback.onSuccess(filePath)
