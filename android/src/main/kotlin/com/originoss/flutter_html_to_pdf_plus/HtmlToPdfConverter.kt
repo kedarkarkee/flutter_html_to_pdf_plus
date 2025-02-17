@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.print.PdfPrinter
 import android.print.PrintAttributes
+import android.print.PrintManager
 import android.util.Log
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -79,20 +80,23 @@ class HtmlToPdfConverter {
                 .setResolution(PrintAttributes.Resolution("pdf", "pdf", 600, 600))
                 .setMinMargins(PrintAttributes.Margins(margins[0], margins[1], margins[2], margins[3])).build()
 
-            val printer = PdfPrinter(attributes)
+//            val printer = PdfPrinter(attributes)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 val adapter = webView.createPrintDocumentAdapter(temporaryDocumentName)
                 Log.d("PDFPLUS" ,"Start PDF Creation");
-                printer.print(adapter, path, temporaryFileName, object : PdfPrinter.Callback {
-                    override fun onSuccess(filePath: String) {
-                        callback.onSuccess(filePath)
-                    }
-
-                    override fun onFailure() {
-                        callback.onFailure()
-                    }
-                })
+                val printManager = applicationContext.getSystemService(Context.PRINT_SERVICE) as PrintManager
+                val jobName = "WebView to PDF"
+                printManager.print(jobName, adapter, attributes)
+//                printer.print(adapter, path, temporaryFileName, object : PdfPrinter.Callback {
+//                    override fun onSuccess(filePath: String) {
+//                        callback.onSuccess(filePath)
+//                    }
+//
+//                    override fun onFailure() {
+//                        callback.onFailure()
+//                    }
+//                })
             }
         }
     }
