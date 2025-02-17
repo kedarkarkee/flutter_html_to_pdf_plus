@@ -1,12 +1,19 @@
 package android.print
 
 import android.annotation.TargetApi
+import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
 import android.os.Build
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
 import android.util.Log
+import org.apache.pdfbox.pdmodel.PDDocument
+import org.apache.pdfbox.pdmodel.PDPage
+import org.apache.pdfbox.pdmodel.PDPageContentStream
+import org.apache.pdfbox.pdmodel.common.PDRectangle
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 import java.io.BufferedOutputStream
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -37,38 +44,29 @@ class PdfPrinter(private val printAttributes: PrintAttributes) {
                 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
                 override fun onLayoutFinished(info: PrintDocumentInfo, changed: Boolean) {
                     try {
-                        val outputFile = File(path, fileName)
-                        if (!outputFile.parentFile?.exists()!!) {
-                            outputFile.parentFile?.mkdirs()
-                        }
+                        val outputFileDescriptor = getOutputFile(path, fileName)
 
-                        FileOutputStream(outputFile).use { outputStream ->
-                            // Use PdfRenderer for efficient rendering
-                            val parcelFileDescriptor = ParcelFileDescriptor.open(outputFile, ParcelFileDescriptor.MODE_READ_WRITE)
-                            val renderer = PdfRenderer(parcelFileDescriptor)
+                        FileOutputStream(outputFileDescriptor.fileDescriptor).use { outputStream ->
+                            PDDocument().use { document ->
+                                val renderer = PdfRenderer(outputFileDescriptor)
 
-                            for (pageIndex in 0 until info.pageCount) {
-                                val page = renderer.openPage(pageIndex)
-                                val bitmap = createBitmapForPage(page) // Create bitmap with appropriate size
-                                page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_PRINT)
+                                for (pageIndex in 0 until info.pageCount) {
+                                    val page = renderer.openPage(pageIndex)
+                                    val bitmap = createBitmapForPage(page)
+                                    writeBitmapToPdf(bitmap, document)
+                                    page.close()
+                                    bitmap.recycle()
+                                }
 
-                                // Write bitmap to PDF (using a PDF library is recommended for more control)
-                                // Example (using a simplified approach - consider a proper PDF library):
-                                // bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream) // Or PNG
-
-                                // More robust approach using a PDF library (e.g., PdfBox):
-                                // (See detailed example below)
-
-                                page.close()
-                                bitmap.recycle() // Important: Recycle bitmaps!
+                                renderer.close()
+                                outputFileDescriptor.close() // Important: Close the ParcelFileDescriptor
+                                document.save(outputStream)
                             }
-                            renderer.close()
-                            parcelFileDescriptor.close()
-
-                            callback.onSuccess(outputFile.absolutePath)
+                            callback.onSuccess(File(path, fileName).absolutePath) // Correct path
                         }
                     } catch (e: IOException) {
                         Log.d("PDFPLUS", "Failed to generate PDF")
+                        e.message?.let { Log.e("PDFPLUS", it) };
                         callback.onFailure()
                     }
                 }
@@ -91,6 +89,31 @@ class PdfPrinter(private val printAttributes: PrintAttributes) {
         val scaledWidth = (pageWidth * scale).toInt()
         val scaledHeight = (pageHeight * scale).toInt()
         return android.graphics.Bitmap.createBitmap(scaledWidth, scaledHeight, android.graphics.Bitmap.Config.ARGB_8888)
+    }
+    private fun writeBitmapToPdf(bitmap: Bitmap, document: PDDocument) {
+        val page = PDPage(PDRectangle(bitmap.width.toFloat(), bitmap.height.toFloat()))
+        document.addPage(page)
+
+        try {
+            val pdImage = createPDImageXObject(bitmap, document)
+
+            PDPageContentStream(document, page).use { contentStream ->
+                contentStream.drawImage(pdImage, 0f, 0f, bitmap.width.toFloat(), bitmap.height.toFloat())
+            }
+
+        } catch (e: IOException) {
+            println("Error writing bitmap to PDF: ${e.message}")
+        }
+    }
+    private fun createPDImageXObject(bitmap: Bitmap, document: PDDocument): PDImageXObject {
+        val byteArrayOutputStream = ByteArrayOutputStream()
+
+        // Choose your compression format (PNG is lossless, JPEG is lossy but smaller)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream) // Or JPEG
+
+        val byteArray = byteArrayOutputStream.toByteArray()
+
+        return PDImageXObject.createFromByteArray(document, byteArray, "image.png") // Or "image.jpg"
     }
 }
 
