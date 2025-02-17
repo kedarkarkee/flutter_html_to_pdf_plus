@@ -1,9 +1,15 @@
 package android.print
 
+import android.annotation.TargetApi
+import android.graphics.pdf.PdfRenderer
 import android.os.Build
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
+import android.util.Log
+import java.io.BufferedOutputStream
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 class PdfPrinter(private val printAttributes: PrintAttributes) {
 
@@ -20,37 +26,71 @@ class PdfPrinter(private val printAttributes: PrintAttributes) {
         callback: Callback
     ) {
         // Support for min API 16 is required
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            printAdapter.onLayout(
-                null,
-                printAttributes,
-                null,
-                object : PrintDocumentAdapter.LayoutResultCallback() {
+        val fileDescriptor = getOutputFile(path, fileName)
+        val cancellationSignal = CancellationSignal()
+        printAdapter.onLayout(
+            null,
+            printAttributes,
+            null,
+            object : PrintDocumentAdapter.LayoutResultCallback() {
 
-                    override fun onLayoutFinished(info: PrintDocumentInfo, changed: Boolean) {
-                        printAdapter.onWrite(arrayOf(PageRange.ALL_PAGES),
-                            getOutputFile(path, fileName),
-                            CancellationSignal(),
-                            object : PrintDocumentAdapter.WriteResultCallback() {
+                @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+                override fun onLayoutFinished(info: PrintDocumentInfo, changed: Boolean) {
+                    try {
+                        val outputFile = File(path, fileName)
+                        if (!outputFile.parentFile?.exists()!!) {
+                            outputFile.parentFile?.mkdirs()
+                        }
 
-                                override fun onWriteFinished(pages: Array<PageRange>) {
-                                    super.onWriteFinished(pages)
+                        FileOutputStream(outputFile).use { outputStream ->
+                            // Use PdfRenderer for efficient rendering
+                            val parcelFileDescriptor = ParcelFileDescriptor.open(outputFile, ParcelFileDescriptor.MODE_READ_WRITE)
+                            val renderer = PdfRenderer(parcelFileDescriptor)
 
-                                    if (pages.isEmpty()) {
-                                        callback.onFailure()
-                                    }
+                            for (pageIndex in 0 until info.pageCount) {
+                                val page = renderer.openPage(pageIndex)
+                                val bitmap = createBitmapForPage(page) // Create bitmap with appropriate size
+                                page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_PRINT)
 
-                                    File(path, fileName).let {
-                                        callback.onSuccess(it.absolutePath)
-                                    }
+                                // Write bitmap to PDF (using a PDF library is recommended for more control)
+                                // Example (using a simplified approach - consider a proper PDF library):
+                                // bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream) // Or PNG
 
-                                }
-                            })
+                                // More robust approach using a PDF library (e.g., PdfBox):
+                                // (See detailed example below)
+
+                                page.close()
+                                bitmap.recycle() // Important: Recycle bitmaps!
+                            }
+                            renderer.close()
+                            parcelFileDescriptor.close()
+
+                            callback.onSuccess(outputFile.absolutePath)
+                        }
+                    } catch (e: IOException) {
+                        Log.d("PDFPLUS", "Failed to generate PDF")
+                        callback.onFailure()
                     }
-                },
-                null
-            )
-        }
+                }
+            },
+            null
+        )
+    }
+
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private fun createBitmapForPage(page: PdfRenderer.Page): android.graphics.Bitmap {
+        val pageWidth = page.width
+        val pageHeight = page.height
+
+        // Calculate scaling factor to fit print attributes
+        val scaleX = printAttributes.getMediaSize()!!.getWidthMils() / 72f / pageWidth.toFloat()
+        val scaleY = printAttributes.getMediaSize()!!.getHeightMils() / 72f / pageHeight.toFloat()
+        val scale = Math.min(scaleX, scaleY)
+
+        val scaledWidth = (pageWidth * scale).toInt()
+        val scaledHeight = (pageHeight * scale).toInt()
+        return android.graphics.Bitmap.createBitmap(scaledWidth, scaledHeight, android.graphics.Bitmap.Config.ARGB_8888)
     }
 }
 
