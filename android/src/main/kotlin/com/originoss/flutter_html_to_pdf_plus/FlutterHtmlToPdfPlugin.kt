@@ -12,7 +12,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
 /** FlutterHtmlToPdfPlugin */
-class FlutterHtmlToPdfPlugin: FlutterPlugin, MethodCallHandler {
+class FlutterHtmlToPdfPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private lateinit var channel : MethodChannel
   private lateinit var activity: Activity
   private lateinit var applicationContext: Context
@@ -39,6 +39,17 @@ class FlutterHtmlToPdfPlugin: FlutterPlugin, MethodCallHandler {
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     activity = binding.activity
   }
+
+  override fun onDetachedFromActivityForConfigChanges() {
+  }
+
+  override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+    onAttachedToActivity(binding)
+  }
+
+  override fun onDetachedFromActivity() {
+  }
+
 
   private fun convertHtmlToPdf(call: MethodCall, result: Result) {
     val htmlFilePath = call.argument<String>("htmlFilePath")
