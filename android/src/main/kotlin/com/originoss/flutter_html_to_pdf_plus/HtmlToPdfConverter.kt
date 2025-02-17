@@ -1,6 +1,7 @@
 package com.originoss.flutter_html_to_pdf_plus
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.print.PdfPrinter
@@ -23,7 +24,7 @@ class HtmlToPdfConverter {
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    fun convert(filePath: String, applicationContext: Context, printSize: String, orientation: String, margins: List<Int>, callback: Callback) {
+    fun convert(filePath: String, applicationContext: Activity, printSize: String, orientation: String, margins: List<Int>, callback: Callback) {
         val webView = WebView(applicationContext)
         val htmlContent = File(filePath).bufferedReader().use { reader ->
             val stringBuilder = StringBuilder()
