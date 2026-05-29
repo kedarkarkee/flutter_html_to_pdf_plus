@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'print_config_enums.dart';
+
 class FileUtils {
   static Future<File> createFileWithStringContent(
       String content, String path) async {
@@ -23,13 +25,19 @@ class FileUtils {
     return bytes;
   }
 
-  static Future<void> appendStyleTagToHtmlFile(String htmlPath) async {
+  static Future<void> appendStyleTagToHtmlFile(
+    String htmlPath, {
+    TextDirection textDirection = TextDirection.LTR,
+  }) async {
     String printStyleHtml = """
       <style>
         @media print {
-        * {
+          * {
             -webkit-print-color-adjust: exact !important;
           }
+        }
+        html, body {
+          direction: ${textDirection.directionKey};
         }
       </style>
     """;
