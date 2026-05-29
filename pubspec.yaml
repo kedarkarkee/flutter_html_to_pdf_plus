@@ -22,6 +22,6 @@ flutter:
         package: com.originoss.flutter_html_to_pdf_plus
         pluginClass: FlutterHtmlToPdfPlugin
       ios:
-        pluginClass: SwiftFlutterHtmlToPdfPlugin
+        pluginClass: FlutterHtmlToPdfPlugin
       macos:
         pluginClass: FlutterHtmlToPdfPlusPlugin
