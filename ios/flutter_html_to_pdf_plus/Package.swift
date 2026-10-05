@@ -6,8 +6,8 @@ import PackageDescription
 let package = Package(
     name: "flutter_html_to_pdf_plus",
     platforms: [
-        .iOS("8.0"),
-        .macOS("10.15"),
+        .iOS("12.0"),
+        .macOS("10.14"),
     ],
     products: [
         .library(name: "flutter-html-to-pdf-plus", targets: ["flutter_html_to_pdf_plus"])

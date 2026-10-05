@@ -16,7 +16,7 @@ A Flutter plugin to convert HTML to PDF with support for custom sizes.
   s.source_files     = 'flutter_html_to_pdf_plus/Sources/flutter_html_to_pdf_plus/**/*'
   s.dependency 'FlutterMacOS'
 
-  s.platform = :osx, '10.11'
+  s.platform = :osx, '10.14'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.swift_version = '5.0'
 end
