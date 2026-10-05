@@ -1,3 +1,17 @@
+# 0.5.0
+
+### New features
+
+- Add UiScene Support
+- Add Swift PM Support
+- Cocoapods is still supported
+
+### SDK Changes
+- Update minimum Dart sdk to `>= 3.10.0`
+- Update minimum Flutter version to `>= 3.38.0`
+
+Please use version `0.4.0` if you are still on Flutter `< 3.38.0` as it won't have the UIScene APIs so the plugin will not work.
+
 # 0.4.0
 
 ### New features
